@@ -2,14 +2,20 @@ import subprocess
 from pathlib import Path
 
 # Define paths
-svgIcon: Path = Path("xml.svg")
-background: Path = Path("icon-bg.png")
-finalIcon: Path = Path("icon-final.png")
-iconsDir: Path = Path("icons")
-iconSizes: list[int] = [16, 32, 64, 128, 256, 512, 1024]
+SVG_ICON: Path = Path("xml.svg")
+BACKGROUND: Path = Path("icon-bg.png")
+FINAL_ICON: Path = Path("icon-final.png")
+ICONS_DIR: Path = Path("icons")
+ICON_SIZES: list[int] = [16, 32, 64, 128, 256, 512, 1024]
+
+if ICONS_DIR.exists():
+
+    import shutil
+
+    shutil.rmtree(ICONS_DIR)
 
 # Ensure the output directory exists
-iconsDir.mkdir(parents=True, exist_ok=True)
+ICONS_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def RunCommand(command: str) -> None:
@@ -34,7 +40,7 @@ def CreateAppleIconBackground() -> None:
     """
     command = (
         f"magick -size 1024x1024 xc:none -fill white "
-        f'-draw "roundrectangle 0,0 1024,1024 222,222" {background}'
+        f'-draw "roundrectangle 0,0 1024,1024 222,222" {BACKGROUND}'
     )
     RunCommand(command)
 
@@ -46,7 +52,7 @@ def OverlaySvgOnBackground() -> None:
     The function overlays the SVG icon onto the background image using ImageMagick.
 
     """
-    command = f"magick {background} {svgIcon} -gravity center -composite {finalIcon}"
+    command = f"magick {BACKGROUND} {SVG_ICON} -gravity center -composite {FINAL_ICON}"
     RunCommand(command)
 
 
@@ -57,14 +63,17 @@ def GenerateResizedIcons() -> None:
     For each specified icon size, the function resizes the final icon image using ImageMagick.
 
     """
-    for size in iconSizes:
-        outputFile: Path = iconsDir / f"icon-{size}.png"
-        command = f"magick {finalIcon} -resize {size}x{size} {outputFile}"
+    for size in ICON_SIZES:
+        outputFile: Path = ICONS_DIR / f"icon-{size}.png"
+        command = f"magick {FINAL_ICON} -resize {size}x{size} {outputFile}"
         RunCommand(command)
+
+    FINAL_ICON.unlink()
+    BACKGROUND.unlink()
 
 
 if __name__ == "__main__":
     CreateAppleIconBackground()
     OverlaySvgOnBackground()
     GenerateResizedIcons()
-    print(f"✅ Apple app icons generated successfully in '{iconsDir}'!")
+    print(f"✅ Apple app icons generated successfully in '{ICONS_DIR}'!")
