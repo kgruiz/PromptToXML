@@ -58,6 +58,8 @@
 		E113DA4F2D52A43400296F91 /* PromptToXML.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PromptToXML.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E113DA5B2D52A43400296F91 /* PromptToXML Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "PromptToXML Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E113DA652D52A43400296F91 /* PromptToXML Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "PromptToXML Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E113DAA12D52A4F800296F91 /* instructionsVSCode.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = instructionsVSCode.md; sourceTree = "<group>"; };
+		E113DAA22D52A5C300296F91 /* instructions.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = instructions.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -227,6 +229,8 @@
 		E113DA202D52A43300296F91 = {
 			isa = PBXGroup;
 			children = (
+				E113DAA22D52A5C300296F91 /* instructions.md */,
+				E113DAA12D52A4F800296F91 /* instructionsVSCode.md */,
 				E113DA252D52A43300296F91 /* Shared (App) */,
 				E113DA2E2D52A43400296F91 /* Shared (Extension) */,
 				E113DA3F2D52A43400296F91 /* iOS (App) */,
