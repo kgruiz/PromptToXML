@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		E113DA5C2D52A43400296F91 /* PromptToXML Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = E113DA5B2D52A43400296F91 /* PromptToXML Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		E113DA662D52A43400296F91 /* PromptToXML Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = E113DA652D52A43400296F91 /* PromptToXML Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		E113DB6A2D52B85700296F91 /* test Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = E113DB692D52B85700296F91 /* test Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -25,6 +26,27 @@
 			proxyType = 1;
 			remoteGlobalIDString = E113DA642D52A43400296F91;
 			remoteInfo = "PromptToXML Extension (macOS)";
+		};
+		E113DB542D52B85700296F91 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E113DA212D52A43300296F91 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E113DB372D52B85600296F91;
+			remoteInfo = test;
+		};
+		E113DB5E2D52B85700296F91 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E113DA212D52A43300296F91 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E113DB372D52B85600296F91;
+			remoteInfo = test;
+		};
+		E113DB6B2D52B85700296F91 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E113DA212D52A43300296F91 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E113DB682D52B85700296F91;
+			remoteInfo = "test Extension";
 		};
 /* End PBXContainerItemProxy section */
 
@@ -51,6 +73,17 @@
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		E113DB872D52B85700296F91 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				E113DB6A2D52B85700296F91 /* test Extension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -58,6 +91,10 @@
 		E113DA4F2D52A43400296F91 /* PromptToXML.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PromptToXML.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E113DA5B2D52A43400296F91 /* PromptToXML Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "PromptToXML Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E113DA652D52A43400296F91 /* PromptToXML Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "PromptToXML Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E113DB382D52B85600296F91 /* test.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = test.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E113DB532D52B85700296F91 /* testTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = testTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		E113DB5D2D52B85700296F91 /* testUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = testUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		E113DB692D52B85700296F91 /* test Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "test Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -188,6 +225,26 @@
 			path = "macOS (Extension)";
 			sourceTree = "<group>";
 		};
+		E113DB392D52B85600296F91 /* test */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = test;
+			sourceTree = "<group>";
+		};
+		E113DB562D52B85700296F91 /* testTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = testTests;
+			sourceTree = "<group>";
+		};
+		E113DB602D52B85700296F91 /* testUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = testUITests;
+			sourceTree = "<group>";
+		};
+		E113DB6D2D52B85700296F91 /* test Extension */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "test Extension";
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -219,6 +276,34 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		E113DB352D52B85600296F91 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E113DB502D52B85700296F91 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E113DB5A2D52B85700296F91 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E113DB662D52B85700296F91 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -231,6 +316,10 @@
 				E113DA502D52A43400296F91 /* macOS (App) */,
 				E113DA5F2D52A43400296F91 /* iOS (Extension) */,
 				E113DA692D52A43400296F91 /* macOS (Extension) */,
+				E113DB392D52B85600296F91 /* test */,
+				E113DB562D52B85700296F91 /* testTests */,
+				E113DB602D52B85700296F91 /* testUITests */,
+				E113DB6D2D52B85700296F91 /* test Extension */,
 				E113DA3E2D52A43400296F91 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -242,6 +331,10 @@
 				E113DA4F2D52A43400296F91 /* PromptToXML.app */,
 				E113DA5B2D52A43400296F91 /* PromptToXML Extension.appex */,
 				E113DA652D52A43400296F91 /* PromptToXML Extension.appex */,
+				E113DB382D52B85600296F91 /* test.app */,
+				E113DB532D52B85700296F91 /* testTests.xctest */,
+				E113DB5D2D52B85700296F91 /* testUITests.xctest */,
+				E113DB692D52B85700296F91 /* test Extension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -341,6 +434,98 @@
 			productReference = E113DA652D52A43400296F91 /* PromptToXML Extension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		E113DB372D52B85600296F91 /* test */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E113DB882D52B85700296F91 /* Build configuration list for PBXNativeTarget "test" */;
+			buildPhases = (
+				E113DB342D52B85600296F91 /* Sources */,
+				E113DB352D52B85600296F91 /* Frameworks */,
+				E113DB362D52B85600296F91 /* Resources */,
+				E113DB872D52B85700296F91 /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				E113DB6C2D52B85700296F91 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				E113DB392D52B85600296F91 /* test */,
+			);
+			name = test;
+			packageProductDependencies = (
+			);
+			productName = test;
+			productReference = E113DB382D52B85600296F91 /* test.app */;
+			productType = "com.apple.product-type.application";
+		};
+		E113DB522D52B85700296F91 /* testTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E113DB8B2D52B85700296F91 /* Build configuration list for PBXNativeTarget "testTests" */;
+			buildPhases = (
+				E113DB4F2D52B85700296F91 /* Sources */,
+				E113DB502D52B85700296F91 /* Frameworks */,
+				E113DB512D52B85700296F91 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				E113DB552D52B85700296F91 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				E113DB562D52B85700296F91 /* testTests */,
+			);
+			name = testTests;
+			packageProductDependencies = (
+			);
+			productName = testTests;
+			productReference = E113DB532D52B85700296F91 /* testTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		E113DB5C2D52B85700296F91 /* testUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E113DB8E2D52B85700296F91 /* Build configuration list for PBXNativeTarget "testUITests" */;
+			buildPhases = (
+				E113DB592D52B85700296F91 /* Sources */,
+				E113DB5A2D52B85700296F91 /* Frameworks */,
+				E113DB5B2D52B85700296F91 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				E113DB5F2D52B85700296F91 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				E113DB602D52B85700296F91 /* testUITests */,
+			);
+			name = testUITests;
+			packageProductDependencies = (
+			);
+			productName = testUITests;
+			productReference = E113DB5D2D52B85700296F91 /* testUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		E113DB682D52B85700296F91 /* test Extension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E113DB842D52B85700296F91 /* Build configuration list for PBXNativeTarget "test Extension" */;
+			buildPhases = (
+				E113DB652D52B85700296F91 /* Sources */,
+				E113DB662D52B85700296F91 /* Frameworks */,
+				E113DB672D52B85700296F91 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				E113DB6D2D52B85700296F91 /* test Extension */,
+			);
+			name = "test Extension";
+			packageProductDependencies = (
+			);
+			productName = "test Extension";
+			productReference = E113DB692D52B85700296F91 /* test Extension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -363,6 +548,20 @@
 					E113DA642D52A43400296F91 = {
 						CreatedOnToolsVersion = 16.2;
 					};
+					E113DB372D52B85600296F91 = {
+						CreatedOnToolsVersion = 16.2;
+					};
+					E113DB522D52B85700296F91 = {
+						CreatedOnToolsVersion = 16.2;
+						TestTargetID = E113DB372D52B85600296F91;
+					};
+					E113DB5C2D52B85700296F91 = {
+						CreatedOnToolsVersion = 16.2;
+						TestTargetID = E113DB372D52B85600296F91;
+					};
+					E113DB682D52B85700296F91 = {
+						CreatedOnToolsVersion = 16.2;
+					};
 				};
 			};
 			buildConfigurationList = E113DA242D52A43300296F91 /* Build configuration list for PBXProject "PromptToXML" */;
@@ -383,6 +582,10 @@
 				E113DA4E2D52A43400296F91 /* PromptToXML (macOS) */,
 				E113DA5A2D52A43400296F91 /* PromptToXML Extension (iOS) */,
 				E113DA642D52A43400296F91 /* PromptToXML Extension (macOS) */,
+				E113DB372D52B85600296F91 /* test */,
+				E113DB522D52B85700296F91 /* testTests */,
+				E113DB5C2D52B85700296F91 /* testUITests */,
+				E113DB682D52B85700296F91 /* test Extension */,
 			);
 		};
 /* End PBXProject section */
@@ -410,6 +613,34 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		E113DA632D52A43400296F91 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E113DB362D52B85600296F91 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E113DB512D52B85700296F91 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E113DB5B2D52B85700296F91 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E113DB672D52B85700296F91 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -447,6 +678,34 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		E113DB342D52B85600296F91 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E113DB4F2D52B85700296F91 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E113DB592D52B85700296F91 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E113DB652D52B85700296F91 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -459,6 +718,21 @@
 			isa = PBXTargetDependency;
 			target = E113DA642D52A43400296F91 /* PromptToXML Extension (macOS) */;
 			targetProxy = E113DA672D52A43400296F91 /* PBXContainerItemProxy */;
+		};
+		E113DB552D52B85700296F91 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E113DB372D52B85600296F91 /* test */;
+			targetProxy = E113DB542D52B85700296F91 /* PBXContainerItemProxy */;
+		};
+		E113DB5F2D52B85700296F91 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E113DB372D52B85600296F91 /* test */;
+			targetProxy = E113DB5E2D52B85700296F91 /* PBXContainerItemProxy */;
+		};
+		E113DB6C2D52B85700296F91 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E113DB682D52B85700296F91 /* test Extension */;
+			targetProxy = E113DB6B2D52B85700296F91 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -847,6 +1121,216 @@
 			};
 			name = Release;
 		};
+		E113DB852D52B85700296F91 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "test Extension/test_Extension.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3B955TDNXW;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "test Extension/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "test Extension";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 15.2;
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = personal.PromptToXML.Extension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		E113DB862D52B85700296F91 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "test Extension/test_Extension.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3B955TDNXW;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "test Extension/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "test Extension";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 15.2;
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = personal.PromptToXML.Extension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		E113DB892D52B85700296F91 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = test/test.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3B955TDNXW;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = test;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMainStoryboardFile = Main;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 15.2;
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+					"-framework",
+					WebKit,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = personal.test;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		E113DB8A2D52B85700296F91 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = test/test.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3B955TDNXW;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = test;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMainStoryboardFile = Main;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 15.2;
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+					"-framework",
+					WebKit,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = personal.test;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		E113DB8C2D52B85700296F91 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3B955TDNXW;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = personal.testTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/test.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/test";
+			};
+			name = Debug;
+		};
+		E113DB8D2D52B85700296F91 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3B955TDNXW;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = personal.testTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/test.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/test";
+			};
+			name = Release;
+		};
+		E113DB8F2D52B85700296F91 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3B955TDNXW;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = personal.testUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = test;
+			};
+			name = Debug;
+		};
+		E113DB902D52B85700296F91 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3B955TDNXW;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = personal.testUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = test;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -891,6 +1375,42 @@
 			buildConfigurations = (
 				E113DA9B2D52A43400296F91 /* Debug */,
 				E113DA9C2D52A43400296F91 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E113DB842D52B85700296F91 /* Build configuration list for PBXNativeTarget "test Extension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E113DB852D52B85700296F91 /* Debug */,
+				E113DB862D52B85700296F91 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E113DB882D52B85700296F91 /* Build configuration list for PBXNativeTarget "test" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E113DB892D52B85700296F91 /* Debug */,
+				E113DB8A2D52B85700296F91 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E113DB8B2D52B85700296F91 /* Build configuration list for PBXNativeTarget "testTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E113DB8C2D52B85700296F91 /* Debug */,
+				E113DB8D2D52B85700296F91 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E113DB8E2D52B85700296F91 /* Build configuration list for PBXNativeTarget "testUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E113DB8F2D52B85700296F91 /* Debug */,
+				E113DB902D52B85700296F91 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
