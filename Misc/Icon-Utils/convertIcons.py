@@ -23,7 +23,7 @@ ICON_MAPPING = {
     "256x256@2x": "icon-512.png",
     "512x512@1x": "icon-512.png",
     "512x512@2x": "icon-1024.png",
-    "1024x1024": "icon-1024.png",
+    # "1024x1024": "icon-1024.png",
 }
 
 # Remove and recreate icons directory if it exists
