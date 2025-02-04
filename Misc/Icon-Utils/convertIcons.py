@@ -6,7 +6,7 @@ SVG_ICON: Path = Path("xml.svg")
 BACKGROUND: Path = Path("icon-bg.png")
 FINAL_ICON: Path = Path("icon-final.png")
 ICONS_DIR: Path = Path("icons")
-ICON_SIZES: list[int] = [16, 32, 64, 128, 256, 512, 1024]
+ICON_SIZES: list[int] = [16, 32, 48, 64, 96, 128, 256, 384, 512, 1024]
 
 if ICONS_DIR.exists():
 
