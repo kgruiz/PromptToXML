@@ -3,16 +3,25 @@ import shutil
 import subprocess
 from pathlib import Path
 
-# Define paths
-SVG_ICON: Path = Path("xml.svg")
-BACKGROUND: Path = Path("icon-bg.png")
-FINAL_ICON: Path = Path("icon-final.png")
-ICONS_DIR: Path = Path("icons")
-APPICONSET_DIR: Path = Path("../../Shared (App)/Assets.xcassets/AppIcon.appiconset")
-EXTENTSION_IMAGES_DIR: Path = Path("../../Shared (Extension)/Resources/images")
+# ------------------------------------------------------------------------------
+# MACRO_CASE CONSTANTS
+# ------------------------------------------------------------------------------
+SVG_ICON = Path("xml.svg")
+DARK_SVG_ICON = Path("dark-xml.svg")
+BACKGROUND = Path("icon-bg.png")
+FINAL_ICON = Path("icon-final.png")
 
-# Define icon sizes and mappings for AppIcon.appiconset
-ICON_SIZES: list[int] = [16, 32, 48, 64, 96, 128, 256, 384, 512, 1024]
+# Temporary directory for generated mac icons
+ICONS_DIR = Path("icons")
+
+# The AppIcon.appiconset directory – all icons (mac, iOS, and watchOS) will be copied here.
+APPICONSET_DIR = Path("../../Shared (App)/Assets.xcassets/AppIcon.appiconset")
+
+# Extension images directory (unchanged)
+EXTENTSION_IMAGES_DIR = Path("../../Shared (Extension)/Resources/images")
+
+# Mac icon sizes and mapping (original functionality)
+ICON_SIZES = [16, 32, 48, 64, 96, 128, 256, 384, 512, 1024]
 ICON_MAPPING = {
     "16x16@1x": "icon-16.png",
     "16x16@2x": "icon-32.png",
@@ -24,38 +33,336 @@ ICON_MAPPING = {
     "256x256@2x": "icon-512.png",
     "512x512@1x": "icon-512.png",
     "512x512@2x": "icon-1024.png",
-    # "1024x1024": "icon-1024.png",
+    # "1024x1024": "icon-1024.png",  # Uncomment if needed
 }
 
-EXTENSION_SIZES: list[int] = [48, 64, 96, 128, 256, 512]
+# ------------------------------------------------------------------------------
+# FINAL SPECIFICATIONS FOR CONTENTS.JSON
+# (Each spec includes a "pixels" key for internal calculations.)
+# ------------------------------------------------------------------------------
+IOS_FINAL_SPECS = [
+    {
+        "idiom": "universal",
+        "platform": "ios",
+        "scale": "2x",
+        "size": "20x20",
+        "pixels": 40,
+    },
+    {
+        "idiom": "universal",
+        "platform": "ios",
+        "scale": "3x",
+        "size": "20x20",
+        "pixels": 60,
+    },
+    {
+        "idiom": "universal",
+        "platform": "ios",
+        "scale": "2x",
+        "size": "29x29",
+        "pixels": 58,
+    },
+    {
+        "idiom": "universal",
+        "platform": "ios",
+        "scale": "3x",
+        "size": "29x29",
+        "pixels": 87,
+    },
+    {
+        "idiom": "universal",
+        "platform": "ios",
+        "scale": "2x",
+        "size": "38x38",
+        "pixels": 76,
+    },
+    {
+        "idiom": "universal",
+        "platform": "ios",
+        "scale": "3x",
+        "size": "38x38",
+        "pixels": 114,
+    },
+    {
+        "idiom": "universal",
+        "platform": "ios",
+        "scale": "2x",
+        "size": "40x40",
+        "pixels": 80,
+    },
+    {
+        "idiom": "universal",
+        "platform": "ios",
+        "scale": "3x",
+        "size": "40x40",
+        "pixels": 120,
+    },
+    {
+        "idiom": "universal",
+        "platform": "ios",
+        "scale": "2x",
+        "size": "60x60",
+        "pixels": 120,
+    },
+    {
+        "idiom": "universal",
+        "platform": "ios",
+        "scale": "3x",
+        "size": "60x60",
+        "pixels": 180,
+    },
+    {
+        "idiom": "universal",
+        "platform": "ios",
+        "scale": "2x",
+        "size": "64x64",
+        "pixels": 128,
+    },
+    {
+        "idiom": "universal",
+        "platform": "ios",
+        "scale": "3x",
+        "size": "64x64",
+        "pixels": 192,
+    },
+    {
+        "idiom": "universal",
+        "platform": "ios",
+        "scale": "2x",
+        "size": "68x68",
+        "pixels": 136,
+    },
+    {
+        "idiom": "universal",
+        "platform": "ios",
+        "scale": "2x",
+        "size": "76x76",
+        "pixels": 152,
+    },
+    {
+        "idiom": "universal",
+        "platform": "ios",
+        "scale": "2x",
+        "size": "83.5x83.5",
+        "pixels": 167,
+    },
+    {"idiom": "universal", "platform": "ios", "size": "1024x1024", "pixels": 1024},
+]
 
-# Remove and recreate icons directory if it exists
-if ICONS_DIR.exists():
-    shutil.rmtree(ICONS_DIR)
-ICONS_DIR.mkdir(parents=True, exist_ok=True)
+MAC_FINAL_SPECS = [
+    {"idiom": "mac", "scale": "1x", "size": "16x16", "pixels": 16},
+    {"idiom": "mac", "scale": "2x", "size": "16x16", "pixels": 32},
+    {"idiom": "mac", "scale": "1x", "size": "32x32", "pixels": 32},
+    {"idiom": "mac", "scale": "2x", "size": "32x32", "pixels": 64},
+    {"idiom": "mac", "scale": "1x", "size": "128x128", "pixels": 128},
+    {"idiom": "mac", "scale": "2x", "size": "128x128", "pixels": 256},
+    {"idiom": "mac", "scale": "1x", "size": "256x256", "pixels": 256},
+    {"idiom": "mac", "scale": "2x", "size": "256x256", "pixels": 512},
+    {"idiom": "mac", "scale": "1x", "size": "512x512", "pixels": 512},
+    {"idiom": "mac", "scale": "2x", "size": "512x512", "pixels": 1024},
+]
 
-if EXTENTSION_IMAGES_DIR.exists():
-    shutil.rmtree(EXTENTSION_IMAGES_DIR)
-EXTENTSION_IMAGES_DIR.mkdir(parents=True, exist_ok=True)
+WATCHOS_FINAL_SPECS = [
+    {
+        "idiom": "universal",
+        "platform": "watchos",
+        "scale": "2x",
+        "size": "22x22",
+        "pixels": 44,
+    },
+    {
+        "idiom": "universal",
+        "platform": "watchos",
+        "scale": "2x",
+        "size": "24x24",
+        "pixels": 48,
+    },
+    {
+        "idiom": "universal",
+        "platform": "watchos",
+        "scale": "2x",
+        "size": "27.5x27.5",
+        "pixels": 55,
+    },
+    {
+        "idiom": "universal",
+        "platform": "watchos",
+        "scale": "2x",
+        "size": "29x29",
+        "pixels": 58,
+    },
+    {
+        "idiom": "universal",
+        "platform": "watchos",
+        "scale": "2x",
+        "size": "30x30",
+        "pixels": 60,
+    },
+    {
+        "idiom": "universal",
+        "platform": "watchos",
+        "scale": "2x",
+        "size": "32x32",
+        "pixels": 64,
+    },
+    {
+        "idiom": "universal",
+        "platform": "watchos",
+        "scale": "2x",
+        "size": "33x33",
+        "pixels": 66,
+    },
+    {
+        "idiom": "universal",
+        "platform": "watchos",
+        "scale": "2x",
+        "size": "40x40",
+        "pixels": 80,
+    },
+    {
+        "idiom": "universal",
+        "platform": "watchos",
+        "scale": "2x",
+        "size": "43.5x43.5",
+        "pixels": 87,
+    },
+    {
+        "idiom": "universal",
+        "platform": "watchos",
+        "scale": "2x",
+        "size": "44x44",
+        "pixels": 88,
+    },
+    {
+        "idiom": "universal",
+        "platform": "watchos",
+        "scale": "2x",
+        "size": "46x46",
+        "pixels": 92,
+    },
+    {
+        "idiom": "universal",
+        "platform": "watchos",
+        "scale": "2x",
+        "size": "50x50",
+        "pixels": 100,
+    },
+    {
+        "idiom": "universal",
+        "platform": "watchos",
+        "scale": "2x",
+        "size": "51x51",
+        "pixels": 102,
+    },
+    {
+        "idiom": "universal",
+        "platform": "watchos",
+        "scale": "2x",
+        "size": "54x54",
+        "pixels": 108,
+    },
+    {
+        "idiom": "universal",
+        "platform": "watchos",
+        "scale": "2x",
+        "size": "86x86",
+        "pixels": 172,
+    },
+    {
+        "idiom": "universal",
+        "platform": "watchos",
+        "scale": "2x",
+        "size": "98x98",
+        "pixels": 196,
+    },
+    {
+        "idiom": "universal",
+        "platform": "watchos",
+        "scale": "2x",
+        "size": "108x108",
+        "pixels": 216,
+    },
+    {
+        "idiom": "universal",
+        "platform": "watchos",
+        "scale": "2x",
+        "size": "117x117",
+        "pixels": 234,
+    },
+    {
+        "idiom": "universal",
+        "platform": "watchos",
+        "scale": "2x",
+        "size": "129x129",
+        "pixels": 258,
+    },
+    {"idiom": "universal", "platform": "watchos", "size": "1024x1024", "pixels": 1024},
+]
+
+# ------------------------------------------------------------------------------
+# DIRECTORY PREPARATION
+# ------------------------------------------------------------------------------
+for directory in [ICONS_DIR, EXTENTSION_IMAGES_DIR, APPICONSET_DIR]:
+    if directory.exists():
+        shutil.rmtree(directory)
+    directory.mkdir(parents=True, exist_ok=True)
 
 
-def RunCommand(command: str) -> None:
+# ------------------------------------------------------------------------------
+# UTILITY FUNCTIONS
+# ------------------------------------------------------------------------------
+def RunCommand(command):
     """
     Run a shell command using subprocess.
 
     Parameters
     ----------
     command : str
-        Shell command to be executed.
+        The shell command to be executed.
     """
     subprocess.run(command, shell=True, check=True)
 
 
-def CreateAppleIconBackground() -> None:
+def GenerateImage(spec, variantPrefix):
     """
-    Create a rounded Apple-style background.
+    Generate an icon image by resizing the master icon.
 
-    This function generates a rounded background image using ImageMagick.
+    Parameters
+    ----------
+    spec : dict
+        A dictionary with keys "size", optionally "scale", and "pixels".
+    variantPrefix : str
+        A prefix for the output filename (e.g., "ios", "mac", or "watchos").
+
+    Returns
+    -------
+    str
+        The generated output filename.
+    """
+    # Use the provided "pixels" value.
+    pixels = spec["pixels"]
+
+    scalePart = spec.get("scale", "")
+    if scalePart:
+        filename = f"{variantPrefix}_{spec['size']}_{scalePart}.png"
+    else:
+        filename = f"{variantPrefix}_{spec['size']}.png"
+    outputFile = APPICONSET_DIR / filename
+    command = f"magick '{FINAL_ICON}' -resize {pixels}x{pixels} '{outputFile}'"
+    RunCommand(command)
+    return filename
+
+
+# ------------------------------------------------------------------------------
+# ORIGINAL ICON GENERATION FUNCTIONS (for mac icons and extension icons)
+# ------------------------------------------------------------------------------
+def CreateAppleIconBackground():
+    """
+    Create a rounded Apple-style background using ImageMagick.
+
+    Returns
+    -------
+    None
     """
     command = (
         f"magick -size 1024x1024 xc:none -fill white "
@@ -64,11 +371,13 @@ def CreateAppleIconBackground() -> None:
     RunCommand(command)
 
 
-def OverlaySvgOnBackground() -> None:
+def OverlaySvgOnBackground():
     """
     Overlay the transparent SVG onto the Apple-style background.
 
-    The function overlays the SVG icon onto the background image using ImageMagick.
+    Returns
+    -------
+    None
     """
     command = (
         f"magick '{BACKGROUND}' '{SVG_ICON}' -gravity center -composite '{FINAL_ICON}'"
@@ -76,84 +385,125 @@ def OverlaySvgOnBackground() -> None:
     RunCommand(command)
 
 
-def GenerateResizedIcons() -> None:
+def GenerateResizedIcons():
     """
-    Generate multiple icon sizes and save them to the icons directory.
+    Generate mac icons by resizing the final icon image.
+    The generated images are stored temporarily in ICONS_DIR.
 
-    For each specified icon size, the function resizes the final icon image using ImageMagick.
+    Returns
+    -------
+    None
     """
-
     for size in ICON_SIZES:
-        outputFile: Path = ICONS_DIR / f"icon-{size}.png"
+        outputFile = ICONS_DIR / f"icon-{size}.png"
         command = f"magick '{FINAL_ICON}' -resize {size}x{size} '{outputFile}'"
         RunCommand(command)
 
 
-def GenerateExtensionIcons() -> None:
+def GenerateExtensionIcons():
+    """
+    Generate extension icons and copy the toolbar SVG.
 
-    for size in EXTENSION_SIZES:
-        outputFile: Path = EXTENTSION_IMAGES_DIR / f"icon-{size}.png"
+    Returns
+    -------
+    None
+    """
+    extensionSizes = [48, 64, 96, 128, 256, 512]
+    for size in extensionSizes:
+        outputFile = EXTENTSION_IMAGES_DIR / f"icon-{size}.png"
         command = f"magick '{FINAL_ICON}' -resize {size}x{size} '{outputFile}'"
         RunCommand(command)
-
-    extensionSvgPath: Path = EXTENTSION_IMAGES_DIR / "toolbar-icon.svg"
-
+    extensionSvgPath = EXTENTSION_IMAGES_DIR / "toolbar-icon.svg"
     shutil.copy(SVG_ICON, extensionSvgPath)
 
 
-def GenerateAppIconSet() -> None:
+# ------------------------------------------------------------------------------
+# FINAL CONTENTS.JSON GENERATION FUNCTION
+# ------------------------------------------------------------------------------
+def GenerateFinalContents():
     """
-    Generate the AppIcon.appiconset folder with properly assigned icons and a Contents.json file.
+    Generate the final Contents.json file in APPICONSET_DIR using the specified
+    iOS, mac, and watchOS icon specifications. Also generate the corresponding
+    image files (by resizing the master icon). Each image entry will include a
+    "filename" attribute.
 
-    Parameters
-    ----------
+    The final JSON structure will be as follows:
+
+    {
+      "images": [
+        { "idiom": "universal", "platform": "ios", "scale": "2x", "size": "20x20", "filename": "<name>" },
+        { "idiom": "universal", "platform": "ios", "scale": "3x", "size": "20x20", "filename": "<name>" },
+        ... (remaining iOS entries) ...,
+        { "idiom": "mac", "scale": "1x", "size": "16x16", "filename": "<name>" },
+        ... (remaining mac entries) ...,
+        { "idiom": "universal", "platform": "watchos", "scale": "2x", "size": "22x22", "filename": "<name>" },
+        ... (remaining watchOS entries) ...
+      ],
+      "info": {
+         "author": "Kaden Gruizenga",
+         "version": 0.1
+      }
+    }
+
+    Returns
+    -------
     None
     """
+    finalEntries = []
 
-    # Ensure the AppIcon.appiconset directory exists
-    APPICONSET_DIR.mkdir(parents=True, exist_ok=True)
+    # Generate iOS icons and add entries
+    for spec in IOS_FINAL_SPECS:
+        filename = GenerateImage(spec, "ios")
+        entry = {k: v for k, v in spec.items() if k != "pixels"}
+        entry["filename"] = filename
+        finalEntries.append(entry)
 
-    # Copy icons into AppIcon.appiconset
-    for sizeKey, filename in ICON_MAPPING.items():
+    # Generate mac icons and add entries
+    for spec in MAC_FINAL_SPECS:
+        filename = GenerateImage(spec, "mac")
+        entry = {k: v for k, v in spec.items() if k != "pixels"}
+        entry["filename"] = filename
+        finalEntries.append(entry)
 
-        sourceFile: Path = ICONS_DIR / filename
-        targetFile: Path = APPICONSET_DIR / filename
-        if sourceFile.exists():
+    # Generate watchOS icons and add entries
+    for spec in WATCHOS_FINAL_SPECS:
+        filename = GenerateImage(spec, "watchos")
+        entry = {k: v for k, v in spec.items() if k != "pixels"}
+        entry["filename"] = filename
+        finalEntries.append(entry)
 
-            shutil.copy(sourceFile, targetFile)
-        else:
+    contents = {
+        "images": finalEntries,
+        "info": {"author": "Kaden Gruizenga", "version": 0.1},
+    }
 
-            print(f"⚠️ Warning: Missing '{filename}' in '{ICONS_DIR}'")
-
-    # Create Contents.json
-    contents = {"images": [], "info": {"author": "xcode", "version": 1}}
-
-    for sizeKey, filename in ICON_MAPPING.items():
-
-        size, scale = sizeKey.split("@") if "@" in sizeKey else (sizeKey, "1x")
-        contents["images"].append(
-            {"idiom": "mac", "size": size, "scale": scale, "filename": filename}
-        )
-
-    # Write Contents.json file
     with open(APPICONSET_DIR / "Contents.json", "w") as jsonFile:
+        json.dump(contents, jsonFile, indent=2)
 
-        json.dump(contents, jsonFile, indent=4)
-
-    print(f"✅ AppIcon.appiconset successfully generated at '{APPICONSET_DIR}'!")
+    print(f"✅ Final Contents.json generated at '{APPICONSET_DIR}'!")
 
 
+# ------------------------------------------------------------------------------
+# MAIN EXECUTION
+# ------------------------------------------------------------------------------
 if __name__ == "__main__":
-
+    # Step 1: Create the master icon image.
     CreateAppleIconBackground()
     OverlaySvgOnBackground()
+
+    # Step 2: Generate the mac icons (temporary) and copy them to APPICONSET_DIR.
     GenerateResizedIcons()
-    GenerateAppIconSet()
+
+    # Step 3: Generate extension icons (remain in their designated folder).
     GenerateExtensionIcons()
 
+    # Step 4: Generate the final Contents.json (with iOS, mac, and watchOS entries including filename)
+    GenerateFinalContents()
+
+    # Cleanup temporary files.
     FINAL_ICON.unlink()
     BACKGROUND.unlink()
 
     print(
-        f"✅ Apple app icons generated successfully in '{ICONS_DIR}' and assigned to AppIcon.appiconset!"
+        f"✅ Apple app icons generated successfully and placed in '{APPICONSET_DIR}'!"
     )
