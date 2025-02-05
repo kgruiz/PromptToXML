@@ -9,6 +9,7 @@ BACKGROUND: Path = Path("icon-bg.png")
 FINAL_ICON: Path = Path("icon-final.png")
 ICONS_DIR: Path = Path("icons")
 APPICONSET_DIR: Path = Path("../../Shared (App)/Assets.xcassets/AppIcon.appiconset")
+EXTENTSION_IMAGES_DIR: Path = Path("../../Shared (Extension)/Resources/images")
 
 # Define icon sizes and mappings for AppIcon.appiconset
 ICON_SIZES: list[int] = [16, 32, 48, 64, 96, 128, 256, 384, 512, 1024]
@@ -26,10 +27,16 @@ ICON_MAPPING = {
     # "1024x1024": "icon-1024.png",
 }
 
+EXTENSION_SIZES: list[int] = [48, 64, 96, 128, 256, 512]
+
 # Remove and recreate icons directory if it exists
 if ICONS_DIR.exists():
     shutil.rmtree(ICONS_DIR)
 ICONS_DIR.mkdir(parents=True, exist_ok=True)
+
+if EXTENTSION_IMAGES_DIR.exists():
+    shutil.rmtree(EXTENTSION_IMAGES_DIR)
+EXTENTSION_IMAGES_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def RunCommand(command: str) -> None:
@@ -52,7 +59,7 @@ def CreateAppleIconBackground() -> None:
     """
     command = (
         f"magick -size 1024x1024 xc:none -fill white "
-        f'-draw "roundrectangle 0,0 1024,1024 222,222" {BACKGROUND}'
+        f'-draw "roundrectangle 0,0 1024,1024 222,222" "{BACKGROUND}"'
     )
     RunCommand(command)
 
@@ -63,7 +70,9 @@ def OverlaySvgOnBackground() -> None:
 
     The function overlays the SVG icon onto the background image using ImageMagick.
     """
-    command = f"magick {BACKGROUND} {SVG_ICON} -gravity center -composite {FINAL_ICON}"
+    command = (
+        f"magick '{BACKGROUND}' '{SVG_ICON}' -gravity center -composite '{FINAL_ICON}'"
+    )
     RunCommand(command)
 
 
@@ -73,13 +82,23 @@ def GenerateResizedIcons() -> None:
 
     For each specified icon size, the function resizes the final icon image using ImageMagick.
     """
+
     for size in ICON_SIZES:
         outputFile: Path = ICONS_DIR / f"icon-{size}.png"
-        command = f"magick {FINAL_ICON} -resize {size}x{size} {outputFile}"
+        command = f"magick '{FINAL_ICON}' -resize {size}x{size} '{outputFile}'"
         RunCommand(command)
 
-    FINAL_ICON.unlink()
-    BACKGROUND.unlink()
+
+def GenerateExtensionIcons() -> None:
+
+    for size in EXTENSION_SIZES:
+        outputFile: Path = EXTENTSION_IMAGES_DIR / f"icon-{size}.png"
+        command = f"magick '{FINAL_ICON}' -resize {size}x{size} '{outputFile}'"
+        RunCommand(command)
+
+    extensionSvgPath: Path = EXTENTSION_IMAGES_DIR / "toolbar-icon.svg"
+
+    shutil.copy(SVG_ICON, extensionSvgPath)
 
 
 def GenerateAppIconSet() -> None:
@@ -104,7 +123,7 @@ def GenerateAppIconSet() -> None:
             shutil.copy(sourceFile, targetFile)
         else:
 
-            print(f"⚠️ Warning: Missing {filename} in {ICONS_DIR}")
+            print(f"⚠️ Warning: Missing '{filename}' in '{ICONS_DIR}'")
 
     # Create Contents.json
     contents = {"images": [], "info": {"author": "xcode", "version": 1}}
@@ -125,10 +144,16 @@ def GenerateAppIconSet() -> None:
 
 
 if __name__ == "__main__":
+
     CreateAppleIconBackground()
     OverlaySvgOnBackground()
     GenerateResizedIcons()
     GenerateAppIconSet()
+    GenerateExtensionIcons()
+
+    FINAL_ICON.unlink()
+    BACKGROUND.unlink()
+
     print(
         f"✅ Apple app icons generated successfully in '{ICONS_DIR}' and assigned to AppIcon.appiconset!"
     )
