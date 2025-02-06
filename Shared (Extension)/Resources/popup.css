@@ -3,13 +3,29 @@
 }
 
 body {
-    width: 100px;
+    width: 300px;
     padding: 10px;
-
     font-family: system-ui;
     text-align: center;
 }
 
+pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    background: #f9f9f9;
+    padding: 8px;
+    border: 1px solid #ccc;
+    margin-top: 10px;
+}
+
 @media (prefers-color-scheme: dark) {
-    /* Dark Mode styles go here. */
+    body {
+        background: #333;
+        color: #eee;
+    }
+
+    pre {
+        background: #444;
+        border-color: #666;
+    }
 }

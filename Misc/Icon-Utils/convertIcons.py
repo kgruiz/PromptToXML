@@ -11,16 +11,19 @@ DARK_SVG_ICON = Path("dark-xml.svg")
 BACKGROUND = Path("icon-bg.png")
 FINAL_ICON = Path("icon-final.png")
 
+DARK_BACKGROUND = Path("dark-icon-bg.png")
+DARK_FINAL_ICON = Path("dark-icon-final.png")
+
 # Temporary directory for generated mac icons
 ICONS_DIR = Path("icons")
 
-# The AppIcon.appiconset directory – all icons (mac, iOS, and watchOS) will be copied here.
+# The AppIcon.appiconset directory – all icons (mac, iOS, watchOS) will be copied here.
 APPICONSET_DIR = Path("../../Shared (App)/Assets.xcassets/AppIcon.appiconset")
 
 # Extension images directory (unchanged)
 EXTENTSION_IMAGES_DIR = Path("../../Shared (Extension)/Resources/images")
 
-# Mac icon sizes and mapping (original functionality)
+# Original mac icon sizes and mapping (used for legacy functionality)
 ICON_SIZES = [16, 32, 48, 64, 96, 128, 256, 384, 512, 1024]
 ICON_MAPPING = {
     "16x16@1x": "icon-16.png",
@@ -38,7 +41,7 @@ ICON_MAPPING = {
 
 # ------------------------------------------------------------------------------
 # FINAL SPECIFICATIONS FOR CONTENTS.JSON
-# (Each spec includes a "pixels" key for internal calculations.)
+# (Each spec includes a "pixels" key for internal resizing calculations.)
 # ------------------------------------------------------------------------------
 IOS_FINAL_SPECS = [
     {
@@ -148,6 +151,20 @@ IOS_FINAL_SPECS = [
     },
     {"idiom": "universal", "platform": "ios", "size": "1024x1024", "pixels": 1024},
 ]
+
+# Create dark iOS specs by copying IOS_FINAL_SPECS and adding an appearance entry.
+IOS_DARK_FINAL_SPECS = []
+for spec in IOS_FINAL_SPECS:
+    darkSpec = spec.copy()
+    darkSpec["appearances"] = [{"appearance": "luminosity", "value": "dark"}]
+    IOS_DARK_FINAL_SPECS.append(darkSpec)
+
+# Create tinted iOS specs similarly.
+IOS_TINTED_FINAL_SPECS = []
+for spec in IOS_FINAL_SPECS:
+    tintedSpec = spec.copy()
+    tintedSpec["appearances"] = [{"appearance": "luminosity", "value": "tinted"}]
+    IOS_TINTED_FINAL_SPECS.append(tintedSpec)
 
 MAC_FINAL_SPECS = [
     {"idiom": "mac", "scale": "1x", "size": "16x16", "pixels": 16},
@@ -323,7 +340,7 @@ def RunCommand(command):
     subprocess.run(command, shell=True, check=True)
 
 
-def GenerateImage(spec, variantPrefix):
+def GenerateImage(spec, variantPrefix, master=FINAL_ICON, tint=False):
     """
     Generate an icon image by resizing the master icon.
 
@@ -332,25 +349,61 @@ def GenerateImage(spec, variantPrefix):
     spec : dict
         A dictionary with keys "size", optionally "scale", and "pixels".
     variantPrefix : str
-        A prefix for the output filename (e.g., "ios", "mac", or "watchos").
+        A prefix for the output filename (e.g., "ios", "ios_dark", "ios_tinted", "mac", or "watchos").
+    master : Path, optional
+        The master image file to use, by default FINAL_ICON.
+    tint : bool, optional
+        If True, apply a tint effect using a predefined color, by default False.
 
     Returns
     -------
     str
         The generated output filename.
     """
-    # Use the provided "pixels" value.
     pixels = spec["pixels"]
-
     scalePart = spec.get("scale", "")
     if scalePart:
         filename = f"{variantPrefix}_{spec['size']}_{scalePart}.png"
     else:
         filename = f"{variantPrefix}_{spec['size']}.png"
     outputFile = APPICONSET_DIR / filename
-    command = f"magick '{FINAL_ICON}' -resize {pixels}x{pixels} '{outputFile}'"
+    if tint:
+        command = f"magick '{master}' -resize {pixels}x{pixels} -fill '#007aff' -colorize 30 '{outputFile}'"
+    else:
+        command = f"magick '{master}' -resize {pixels}x{pixels} '{outputFile}'"
     RunCommand(command)
     return filename
+
+
+# ------------------------------------------------------------------------------
+# DARK/TINTED MASTER IMAGE FUNCTIONS
+# ------------------------------------------------------------------------------
+def CreateAppleDarkIconBackground():
+    """
+    Create a dark (black) rounded background using ImageMagick.
+
+    Returns
+    -------
+    None
+    """
+    command = (
+        f"magick -size 1024x1024 xc:none -fill black "
+        f'-draw "roundrectangle 0,0 1024,1024 222,222" "{DARK_BACKGROUND}"'
+    )
+    RunCommand(command)
+
+
+def OverlayDarkSvgOnBackground():
+    """
+    Overlay the dark SVG onto the dark background without a white backing.
+
+    Returns
+    -------
+    None
+    """
+    # The addition of "-background none" prevents the dark SVG from being placed on a white background.
+    command = f"magick '{DARK_BACKGROUND}' '{DARK_SVG_ICON}' -background none -gravity center -composite '{DARK_FINAL_ICON}'"
+    RunCommand(command)
 
 
 # ------------------------------------------------------------------------------
@@ -358,7 +411,7 @@ def GenerateImage(spec, variantPrefix):
 # ------------------------------------------------------------------------------
 def CreateAppleIconBackground():
     """
-    Create a rounded Apple-style background using ImageMagick.
+    Create a light rounded background using ImageMagick.
 
     Returns
     -------
@@ -373,7 +426,7 @@ def CreateAppleIconBackground():
 
 def OverlaySvgOnBackground():
     """
-    Overlay the transparent SVG onto the Apple-style background.
+    Overlay the light SVG onto the light background.
 
     Returns
     -------
@@ -387,7 +440,7 @@ def OverlaySvgOnBackground():
 
 def GenerateResizedIcons():
     """
-    Generate mac icons by resizing the final icon image.
+    Generate mac icons by resizing the light master icon.
     The generated images are stored temporarily in ICONS_DIR.
 
     Returns
@@ -423,27 +476,9 @@ def GenerateExtensionIcons():
 def GenerateFinalContents():
     """
     Generate the final Contents.json file in APPICONSET_DIR using the specified
-    iOS, mac, and watchOS icon specifications. Also generate the corresponding
-    image files (by resizing the master icon). Each image entry will include a
-    "filename" attribute.
-
-    The final JSON structure will be as follows:
-
-    {
-      "images": [
-        { "idiom": "universal", "platform": "ios", "scale": "2x", "size": "20x20", "filename": "<name>" },
-        { "idiom": "universal", "platform": "ios", "scale": "3x", "size": "20x20", "filename": "<name>" },
-        ... (remaining iOS entries) ...,
-        { "idiom": "mac", "scale": "1x", "size": "16x16", "filename": "<name>" },
-        ... (remaining mac entries) ...,
-        { "idiom": "universal", "platform": "watchos", "scale": "2x", "size": "22x22", "filename": "<name>" },
-        ... (remaining watchOS entries) ...
-      ],
-      "info": {
-         "author": "Kaden Gruizenga",
-         "version": 0.1
-      }
-    }
+    default iOS, dark iOS, tinted iOS, mac, and watchOS icon specifications. For each image,
+    generate the corresponding image file (by resizing the appropriate master icon)
+    and include a "filename" attribute.
 
     Returns
     -------
@@ -451,31 +486,42 @@ def GenerateFinalContents():
     """
     finalEntries = []
 
-    # Generate iOS icons and add entries
+    # Generate default iOS icons using the light master icon.
     for spec in IOS_FINAL_SPECS:
-        filename = GenerateImage(spec, "ios")
+        filename = GenerateImage(spec, "ios", master=FINAL_ICON, tint=False)
         entry = {k: v for k, v in spec.items() if k != "pixels"}
         entry["filename"] = filename
         finalEntries.append(entry)
 
-    # Generate mac icons and add entries
+    # Generate dark iOS icons using the dark master icon.
+    for spec in IOS_DARK_FINAL_SPECS:
+        filename = GenerateImage(spec, "ios_dark", master=DARK_FINAL_ICON, tint=False)
+        entry = {k: v for k, v in spec.items() if k != "pixels"}
+        entry["filename"] = filename
+        finalEntries.append(entry)
+
+    # Generate tinted iOS icons using the light master icon with a tint effect.
+    for spec in IOS_TINTED_FINAL_SPECS:
+        filename = GenerateImage(spec, "ios_tinted", master=FINAL_ICON, tint=True)
+        entry = {k: v for k, v in spec.items() if k != "pixels"}
+        entry["filename"] = filename
+        finalEntries.append(entry)
+
+    # Generate mac icons.
     for spec in MAC_FINAL_SPECS:
-        filename = GenerateImage(spec, "mac")
+        filename = GenerateImage(spec, "mac", master=FINAL_ICON, tint=False)
         entry = {k: v for k, v in spec.items() if k != "pixels"}
         entry["filename"] = filename
         finalEntries.append(entry)
 
-    # Generate watchOS icons and add entries
+    # Generate watchOS icons.
     for spec in WATCHOS_FINAL_SPECS:
-        filename = GenerateImage(spec, "watchos")
+        filename = GenerateImage(spec, "watchos", master=FINAL_ICON, tint=False)
         entry = {k: v for k, v in spec.items() if k != "pixels"}
         entry["filename"] = filename
         finalEntries.append(entry)
 
-    contents = {
-        "images": finalEntries,
-        "info": {"author": "Kaden Gruizenga", "version": 0.1},
-    }
+    contents = {"images": finalEntries, "info": {"author": "xcode", "version": 1}}
 
     with open(APPICONSET_DIR / "Contents.json", "w") as jsonFile:
         json.dump(contents, jsonFile, indent=2)
@@ -487,22 +533,26 @@ def GenerateFinalContents():
 # MAIN EXECUTION
 # ------------------------------------------------------------------------------
 if __name__ == "__main__":
-    # Step 1: Create the master icon image.
+    # Step 1: Create the light master icon.
     CreateAppleIconBackground()
     OverlaySvgOnBackground()
 
-    # Step 2: Generate the mac icons (temporary) and copy them to APPICONSET_DIR.
-    GenerateResizedIcons()
+    # Step 2: Create the dark master icon.
+    CreateAppleDarkIconBackground()
+    OverlayDarkSvgOnBackground()
 
-    # Step 3: Generate extension icons (remain in their designated folder).
+    # Step 3: (Original functionality) Generate the mac icons (temporary) and extension icons.
+    GenerateResizedIcons()
     GenerateExtensionIcons()
 
-    # Step 4: Generate the final Contents.json (with iOS, mac, and watchOS entries including filename)
+    # Step 4: Generate the final Contents.json (with default, dark, tinted iOS icons, mac, and watchOS entries).
     GenerateFinalContents()
 
-    # Cleanup temporary files.
-    FINAL_ICON.unlink()
-    BACKGROUND.unlink()
+    # Cleanup temporary master files.
+    # FINAL_ICON.unlink()
+    # BACKGROUND.unlink()
+    # DARK_FINAL_ICON.unlink()
+    # DARK_BACKGROUND.unlink()
 
     print(
         f"✅ Apple app icons generated successfully and placed in '{APPICONSET_DIR}'!"

@@ -29,7 +29,7 @@
             ],
             "matches": 
             [
-                "*://example.com/*"
+                "<all_urls>"
             ]
         }
     ],
@@ -40,5 +40,6 @@
     },
     "permissions": 
     [
+        "activeTab"
     ]
 }
