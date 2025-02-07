@@ -99,7 +99,7 @@ def FormatJsFile(jsFilePath: Path | str, outputPath: Path | str = None) -> None:
 
 if __name__ == "__main__":
 
-    # jsFilePath = Path("Misc/ebd5ewokhsa7ru1i.js")
-    jsFilePath = Path("test.js")
+    jsFilePath = Path("kjpo5jo3s9uxm1qo.js")
+    # jsFilePath = Path("test.js")
 
-    FormatJsFile(jsFilePath)
+    FormatJsFile(jsFilePath, outputPath="vite-script.js")
