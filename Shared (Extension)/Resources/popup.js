@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     const output = document.getElementById('textareaContent');
-    output.textContent = 'Loading textarea properties from the active tab...';
+    output.textContent = 'Waiting for textarea updates from the active tab...';
 
-    // Query the active tab. Make sure a webpage (such as ChatGPT) is open.
+    // Query the active tab.
     browser.tabs.query({active: true, currentWindow: true})
         .then((tabs) => {
             if (!tabs.length) {
@@ -13,20 +13,35 @@ document.addEventListener('DOMContentLoaded', () => {
             const activeTab = tabs[0];
             console.log('Active tab info:', activeTab);
 
-            // Send a message to the content script to retrieve the textarea properties.
-            return browser.tabs.sendMessage(activeTab.id, {action: 'getTextareaContent'});
-        })
-        .then((response) => {
-            if (response && typeof response.content !== 'undefined') {
-                console.log('Received textarea properties:', response.content);
-                output.textContent = response.content;
-            } else {
-                output.textContent =
-                    'No content returned. Ensure the current page includes a <textarea> element.';
-            }
+            // Establish a long-lived connection with the content script.
+            const port = browser.tabs.connect(activeTab.id, {name: 'textarea-monitor'});
+
+            // Listen for messages from the content script.
+            port.onMessage.addListener(message => {
+                if (message.type === 'update' && message.properties) {
+                    console.log('Received update from content script:',
+                                message.properties);
+                    // Update the popup display (here we simply show the formatted JSON).
+                    output.textContent = JSON.stringify(message.properties, null, 2);
+                } else if (message.type === 'error') {
+                    output.textContent = 'Error: ' + message.message;
+                }
+            });
+
+            // Optionally, you can also request an immediate one‑time update.
+            browser.tabs.sendMessage(activeTab.id, {action: 'getTextareaContent'})
+                .then(response => {
+                    if (response && response.content) {
+                        output.textContent = response.content;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error retrieving initial textarea content:', error);
+                    output.textContent = 'Error: ' + error;
+                });
         })
         .catch((error) => {
-            console.error('Error retrieving textarea properties:', error);
-            output.textContent = 'Error retrieving textarea properties: ' + error;
+            console.error('Error querying active tab:', error);
+            output.textContent = 'Error: ' + error;
         });
 });
