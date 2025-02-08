@@ -1,31 +1,220 @@
+/* popup.css */
+
 :root {
-    color-scheme: light dark;
+    --background-light: #f0f2f5;
+    --card-bg: #ffffff;
+    --card-border: #e0e0e0;
+    --primary-color: #6200ea;
+    --text-color: #333333;
+    --accent-color: #03dac6;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --error-color: #d32f2f;
+    --selected-bg: #e8f0fe;
+    --modal-bg: rgba(0, 0, 0, 0.5);
+    --modal-content-bg: #ffffff;
+}
+
+html,
+body {
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
 }
 
 body {
-    width: 300px;
-    padding: 10px;
-    font-family: system-ui;
-    text-align: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--background-light);
+    color: var(--text-color);
+    display: flex;
+    flex-direction: column;
+    height: 600px;
+    width: 480px;
 }
 
-pre {
+.header {
+    padding: 15px;
+    background: var(--card-bg);
+    box-shadow: 0 2px 4px var(--shadow-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: var(--primary-color);
+}
+
+.controls {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.controls button {
+    padding: 8px 12px;
+    border: none;
+    background: var(--primary-color);
+    color: #fff;
+    font-size: 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.controls button:hover {
+    background: var(--accent-color);
+}
+
+.controls button.rotating {
+    animation: rotate 0.5s linear;
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+#treeContainer {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px;
+    background: var(--background-light);
+}
+
+.loading,
+.error {
+    text-align: center;
+    margin: 20px 0;
+    color: var(--text-color);
+}
+
+/* Tree view styling */
+.tree-root,
+.tree-children {
+    list-style: none;
+    margin: 0;
+    padding-left: 20px;
+}
+
+.tree-node {
+    margin: 4px 0;
+}
+
+.node-header {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: background 0.2s ease;
+}
+
+.node-header:hover {
+    background: var(--selected-bg);
+}
+
+.toggle-icon {
+    display: inline-block;
+    width: 20px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.node-label {
+    margin-left: 4px;
+}
+
+/* Modal styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: var(--modal-bg);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 10;
+}
+
+.modal-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.modal-content {
+    background: var(--modal-content-bg);
+    border-radius: 8px;
+    padding: 20px;
+    width: 90%;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 8px var(--shadow-color);
+    position: relative;
+    animation: modalIn 0.3s ease-out;
+}
+
+@keyframes modalIn {
+    from {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.close-modal {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--primary-color);
+}
+
+.modal-pre {
     white-space: pre-wrap;
     word-wrap: break-word;
     background: #f9f9f9;
     padding: 8px;
-    border: 1px solid #ccc;
-    margin-top: 10px;
+    border: 1px solid var(--card-border);
+    border-radius: 4px;
+    margin: 8px 0;
 }
 
 @media (prefers-color-scheme: dark) {
-    body {
-        background: #333;
-        color: #eee;
+    :root {
+        --background-light: #2e2e2e;
+        --card-bg: #3c3c3c;
+        --card-border: #555555;
+        --primary-color: #bb86fc;
+        --text-color: #e0e0e0;
+        --accent-color: #03dac6;
+        --shadow-color: rgba(0, 0, 0, 0.5);
+        --selected-bg: #505f9f;
+        --modal-bg: rgba(0, 0, 0, 0.7);
+        --modal-content-bg: #3c3c3c;
     }
 
-    pre {
-        background: #444;
-        border-color: #666;
+    body {
+        background: var(--background-light);
     }
 }

@@ -1,16 +1,31 @@
+<!-- popup.html -->
 <!DOCTYPE html>
 <html>
 
 <head>
     <meta charset="UTF-8">
-    <title>Textarea Content Viewer</title>
+    <title>DOM Tree Inspector</title>
     <link rel="stylesheet" href="popup.css">
     <script type="module" src="popup.js"></script>
 </head>
 
 <body>
-    <h1>Textarea Content</h1>
-    <pre id="textareaContent">Loading...</pre>
+    <div class="header">
+        <h1>DOM Tree Inspector</h1>
+        <div class="controls">
+            <button id="refreshButton" title="Refresh">&#x21bb;</button>
+        </div>
+    </div>
+    <div id="treeContainer">
+        <p class="loading">Loading DOM tree...</p>
+    </div>
+    <!-- Modal for expanded node details -->
+    <div id="modalOverlay" class="modal-overlay">
+        <div class="modal-content">
+            <button id="closeModal" class="close-modal">&times;</button>
+            <div id="modalDetails"></div>
+        </div>
+    </div>
 </body>
 
 </html>
