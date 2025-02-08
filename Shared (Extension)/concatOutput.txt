@@ -5,10 +5,11 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 Parameters:
 - - - - - - - - - - - - - - - - - - - -
 Extensions:
-  - All
+  - .js
+  - .html
+  - .css
 Exclude Patterns:
-  - popup.js
-  - content.js
+  - N/A
 Case Sensitivity Options:
   - Extensions: false
   - Excludes: false
@@ -17,7 +18,7 @@ Other Options:
   - Include Hidden: false
   - Exclude Binaries: true
 - - - - - - - - - - - - - - - - - - - -
-Total matched files: 7
+Total matched files: 5
 ================================================================================
 
 --------------------------------------------------------------------------------
@@ -64,55 +65,373 @@ Shared (Extension)
 ********************************************************************************
 
 --------------------------------------------------------------------------------
-# Filename: "SafariWebExtensionHandler.swift"
-# Relative to Input Dir: "Shared (Extension)/SafariWebExtensionHandler.swift"
-# Absolute Path: "/Users/kadengruizenga/Development/Projects/PromptToXML/Shared (Extension)/SafariWebExtensionHandler.swift"
+# Filename: "popup.js"
+# Relative to Input Dir: "Shared (Extension)/Resources/popup.js"
+# Absolute Path: "/Users/kadengruizenga/Development/Projects/PromptToXML/Shared (Extension)/Resources/popup.js"
 ********************************************************************************
-# Start of Content in "./SafariWebExtensionHandler.swift":
-//
-//  SafariWebExtensionHandler.swift
-//  Shared (Extension)
-//
-//  Created by Kaden Gruizenga on 2/4/25.
-//
+# Start of Content in "./Resources/popup.js":
+// popup.js
 
-import SafariServices
-import os.log
+document.addEventListener('DOMContentLoaded', () => {
+    const treeContainer = document.getElementById('treeContainer');
+    const refreshButton = document.getElementById('refreshButton');
+    const collapseAllButton = document.getElementById('collapseAll');
+    const expandAllButton = document.getElementById('expandAll');
+    const modalOverlay = document.getElementById('modalOverlay');
+    const modalContent = document.getElementById('modalContent');
+    const modalClose = document.getElementById('modalClose');
 
-class SafariWebExtensionHandler: NSObject, NSExtensionRequestHandling {
+    let domTree = null;
 
-    func beginRequest(with context: NSExtensionContext) {
-        let request = context.inputItems.first as? NSExtensionItem
-
-        let profile: UUID?
-        if #available(iOS 17.0, macOS 14.0, *) {
-            profile = request?.userInfo?[SFExtensionProfileKey] as? UUID
-        } else {
-            profile = request?.userInfo?["profile"] as? UUID
-        }
-
-        let message: Any?
-        if #available(iOS 15.0, macOS 11.0, *) {
-            message = request?.userInfo?[SFExtensionMessageKey]
-        } else {
-            message = request?.userInfo?["message"]
-        }
-
-        os_log(.default, "Received message from browser.runtime.sendNativeMessage: %@ (profile: %@)", String(describing: message), profile?.uuidString ?? "none")
-
-        let response = NSExtensionItem()
-        if #available(iOS 15.0, macOS 11.0, *) {
-            response.userInfo = [ SFExtensionMessageKey: [ "echo": message ] ]
-        } else {
-            response.userInfo = [ "message": [ "echo": message ] ]
-        }
-
-        context.completeRequest(returningItems: [ response ], completionHandler: nil)
+    /**
+     * Creates an inline details element for a node.
+     *
+     * @param {object} node - The node data.
+     * @returns {HTMLElement} - The details element.
+     */
+    function createDetailsElement(node) {
+        const details = document.createElement('div');
+        details.className = 'node-details';
+        details.innerHTML = `
+        <p><strong>ID:</strong> ${node.id || 'None'}</p>
+        <p><strong>Classes:</strong> ${
+            node.classes && node.classes.length > 0 ? node.classes.join(', ') :
+                                                      'None'}</p>
+        <p><strong>Text Content:</strong></p>
+        <pre class="node-pre">${node.textContent || 'None'}</pre>
+        <p><strong>Outer HTML:</strong></p>
+        <pre class="node-pre">${node.outerHTML || 'None'}</pre>
+      `;
+        return details;
     }
 
-}
+    /**
+     * Builds a breadcrumb list representing the parent chain.
+     *
+     * @param {Array} parents - Array of parent nodes.
+     * @returns {HTMLElement} - The constructed unordered list.
+     */
+    function buildParentChain(parents) {
+        const ul = document.createElement('ul');
+        ul.className = 'parent-chain';
+        parents.forEach((p) => {
+            const li = document.createElement('li');
+            li.textContent =
+                p.tag + (p.id ? `#${p.id}` : '') +
+                (p.classes && p.classes.length > 0 ? `.${p.classes.join('.')}` : '');
+            ul.appendChild(li);
+        });
+        return ul;
+    }
 
-# EOF: ./SafariWebExtensionHandler.swift
+    /**
+     * Recursively builds a full tree for a node's children (for modal display).
+     *
+     * @param {object} node - The node data.
+     * @returns {HTMLElement} - The constructed list item.
+     */
+    function buildFullTree(node) {
+        const li = document.createElement('li');
+        li.className = 'modal-tree-node';
+        const label = document.createElement('span');
+        label.textContent =
+            node.tag + (node.id ? `#${node.id}` : '') +
+            (node.classes && node.classes.length > 0 ? `.${node.classes.join('.')}` : '');
+        li.appendChild(label);
+        if (node.children && node.children.length > 0) {
+            const ul = document.createElement('ul');
+            ul.className = 'modal-tree-children';
+            node.children.forEach((child) => {
+                ul.appendChild(buildFullTree(child));
+            });
+            li.appendChild(ul);
+        }
+        return li;
+    }
+
+    /**
+     * Opens a modal displaying the parent chain and children tree of a node.
+     *
+     * @param {object} node - The node data.
+     * @param {Array} parents - The array of parent nodes.
+     */
+    function openModalForNode(node, parents) {
+        modalContent.innerHTML = '';
+        const parentHeading = document.createElement('h2');
+        parentHeading.textContent = 'Parent Chain';
+        modalContent.appendChild(parentHeading);
+        if (parents.length > 0) {
+            const parentChain = buildParentChain(parents);
+            modalContent.appendChild(parentChain);
+        } else {
+            const noParents = document.createElement('p');
+            noParents.textContent = 'No parents (this is the root).';
+            modalContent.appendChild(noParents);
+        }
+        const childrenHeading = document.createElement('h2');
+        childrenHeading.textContent = 'Children Tree';
+        modalContent.appendChild(childrenHeading);
+        if (node.children && node.children.length > 0) {
+            const ul = document.createElement('ul');
+            ul.className = 'modal-tree-root';
+            node.children.forEach((child) => {
+                ul.appendChild(buildFullTree(child));
+            });
+            modalContent.appendChild(ul);
+        } else {
+            const noChildren = document.createElement('p');
+            noChildren.textContent = 'No children.';
+            modalContent.appendChild(noChildren);
+        }
+        modalOverlay.style.display = 'block';
+    }
+
+    // Close modal when the close button or overlay is clicked.
+    modalClose.addEventListener('click', () => {
+        modalOverlay.style.display = 'none';
+    });
+    modalOverlay.addEventListener('click', (e) => {
+        if (e.target === modalOverlay) {
+            modalOverlay.style.display = 'none';
+        }
+    });
+
+    /**
+     * Recursively builds a tree node element with lazy loading.
+     *
+     * @param {object} node - The DOM node data.
+     * @param {Array} parents - The array of parent nodes.
+     * @returns {HTMLElement} - The constructed list item.
+     */
+    function buildTree(node, parents = []) {
+        const li = document.createElement('li');
+        li.className = 'tree-node';
+        li.style.position = 'relative';  // For positioning the vertical line
+
+        const headerDiv = document.createElement('div');
+        headerDiv.className = 'node-header';
+
+        const hasChildren = node.children && node.children.length > 0;
+
+        const arrowIcon = document.createElement('span');
+        arrowIcon.className = 'toggle-icon';
+        arrowIcon.textContent = hasChildren ? '▶' : '';
+        headerDiv.appendChild(arrowIcon);
+
+        const labelSpan = document.createElement('span');
+        labelSpan.className = 'node-label';
+        labelSpan.textContent =
+            node.tag + (node.id ? `#${node.id}` : '') +
+            (node.classes && node.classes.length > 0 ? `.${node.classes.join('.')}` : '');
+        headerDiv.appendChild(labelSpan);
+
+        const detailsDiv = createDetailsElement(node);
+        li.appendChild(headerDiv);
+        li.appendChild(detailsDiv);
+
+        if (hasChildren) {
+            // Single-click toggles the immediate child container only.
+            arrowIcon.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleChildren(li, node, arrowIcon, parents);
+            });
+            labelSpan.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleChildren(li, node, arrowIcon, parents);
+            });
+        } else {
+            // For leaf nodes, single-click toggles inline details.
+            labelSpan.addEventListener('click', (e) => {
+                e.stopPropagation();
+                detailsDiv.classList.toggle('expanded');
+            });
+        }
+
+        // Double-click on header opens modal showing parent chain and immediate children
+        // tree.
+        headerDiv.addEventListener('dblclick', (e) => {
+            e.stopPropagation();
+            openModalForNode(node, parents);
+        });
+
+        return li;
+    }
+
+    /**
+     * Toggles the display of a node's immediate child container and handles the vertical
+     * collapse line.
+     *
+     * @param {HTMLElement} li - The list item element.
+     * @param {object} node - The node data.
+     * @param {HTMLElement} arrowIcon - The arrow icon element.
+     * @param {Array} parents - The array of parent nodes.
+     */
+    function toggleChildren(li, node, arrowIcon, parents) {
+        let childContainer = li.querySelector('ul.tree-children');
+        let collapseLine = li.querySelector('.collapse-line');
+
+        if (!childContainer) {
+            // Create child container lazily.
+            childContainer = document.createElement('ul');
+            childContainer.className = 'tree-children';
+            const frag = document.createDocumentFragment();
+            node.children.forEach((child) => {
+                frag.appendChild(buildTree(child, parents.concat([node])));
+            });
+            childContainer.appendChild(frag);
+            li.appendChild(childContainer);
+            arrowIcon.textContent = '▼';
+
+            // Create the vertical collapse line.
+            collapseLine = document.createElement('div');
+            collapseLine.className = 'collapse-line';
+            collapseLine.addEventListener('click', (e) => {
+                e.stopPropagation();
+                // Collapse only the immediate child container.
+                childContainer.style.display = 'none';
+                arrowIcon.textContent = '▶';
+                collapseLine.remove();
+            });
+            li.appendChild(collapseLine);
+        } else {
+            // Toggle only the immediate container.
+            if (childContainer.style.display === 'none' ||
+                childContainer.style.display === '') {
+                childContainer.style.display = 'block';
+                arrowIcon.textContent = '▼';
+                // If collapse line doesn't exist, create it.
+                if (!collapseLine) {
+                    collapseLine = document.createElement('div');
+                    collapseLine.className = 'collapse-line';
+                    collapseLine.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        childContainer.style.display = 'none';
+                        arrowIcon.textContent = '▶';
+                        collapseLine.remove();
+                    });
+                    li.appendChild(collapseLine);
+                }
+            } else {
+                childContainer.style.display = 'none';
+                arrowIcon.textContent = '▶';
+                if (collapseLine) {
+                    collapseLine.remove();
+                }
+            }
+        }
+    }
+
+    /**
+     * Renders the DOM tree inside the tree container.
+     *
+     * @param {object} tree - The hierarchical DOM tree data.
+     */
+    function renderTree(tree) {
+        treeContainer.innerHTML = '';
+        const ul = document.createElement('ul');
+        ul.className = 'tree-root';
+        ul.appendChild(buildTree(tree, []));
+        treeContainer.appendChild(ul);
+    }
+
+    /**
+     * Retrieves the DOM tree from the active tab.
+     */
+    function fetchDomTree() {
+        return browser.tabs.query({active: true, currentWindow: true})
+            .then((tabs) => {
+                const activeTab = tabs[0];
+                return browser.tabs.sendMessage(activeTab.id, {command: 'getDomTree'})
+                    .then((response) => {
+                        if (response && response.tree) {
+                            domTree = response.tree;
+                            renderTree(domTree);
+                        } else {
+                            treeContainer.innerHTML =
+                                '<p class=\'error\'>No DOM tree found.</p>';
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Error fetching DOM tree', error);
+                        treeContainer.innerHTML =
+                            '<p class=\'error\'>Error retrieving DOM tree.</p>';
+                    });
+            })
+            .catch((error) => {
+                console.error('Error querying tabs', error);
+                treeContainer.innerHTML = '<p class=\'error\'>Error querying tabs.</p>';
+            });
+    }
+
+    /**
+     * Collapses all loaded immediate child containers and inline details.
+     */
+    function collapseAll() {
+        const childContainers = treeContainer.querySelectorAll('ul.tree-children');
+        childContainers.forEach((ul) => {
+            ul.style.display = 'none';
+            const parentLi = ul.parentElement;
+            const arrow = parentLi.querySelector('.toggle-icon');
+            if (arrow) {
+                arrow.textContent = '▶';
+            }
+            const collapseLine = parentLi.querySelector('.collapse-line');
+            if (collapseLine)
+                collapseLine.remove();
+        });
+        const details = treeContainer.querySelectorAll('.node-details.expanded');
+        details.forEach((d) => {
+            d.classList.remove('expanded');
+        });
+    }
+
+    /**
+     * Expands all loaded immediate child containers.
+     */
+    function expandAll() {
+        const childContainers = treeContainer.querySelectorAll('ul.tree-children');
+        childContainers.forEach((ul) => {
+            ul.style.display = 'block';
+            const parentLi = ul.parentElement;
+            const arrow = parentLi.querySelector('.toggle-icon');
+            if (arrow) {
+                arrow.textContent = '▼';
+            }
+            if (!parentLi.querySelector('.collapse-line')) {
+                const collapseLine = document.createElement('div');
+                collapseLine.className = 'collapse-line';
+                collapseLine.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    ul.style.display = 'none';
+                    arrow.textContent = '▶';
+                    collapseLine.remove();
+                });
+                parentLi.appendChild(collapseLine);
+            }
+        });
+    }
+
+    collapseAllButton.addEventListener('click', collapseAll);
+    expandAllButton.addEventListener('click', expandAll);
+
+    refreshButton.addEventListener('click', () => {
+        refreshButton.classList.add('rotating');
+        fetchDomTree().finally(() => {
+            setTimeout(() => {
+                refreshButton.classList.remove('rotating');
+            }, 500);
+        });
+    });
+
+    fetchDomTree();
+
+    // Initialize Smooth Scrollbar for momentum scrolling if available.
+    if (typeof Scrollbar !== 'undefined') {
+        Scrollbar.init(treeContainer, {damping: 0.08});
+    }
+});
+
+# EOF: ./Resources/popup.js
 ================================================================================
 
 
@@ -134,130 +453,46 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 
 --------------------------------------------------------------------------------
-# Filename: "toolbar-icon.svg"
-# Relative to Input Dir: "Shared (Extension)/Resources/images/toolbar-icon.svg"
-# Absolute Path: "/Users/kadengruizenga/Development/Projects/PromptToXML/Shared (Extension)/Resources/images/toolbar-icon.svg"
-********************************************************************************
-# Start of Content in "./Resources/images/toolbar-icon.svg":
-<?xml version="1.0" encoding="utf-8"?>
-<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="800px" height="800px"
-     viewBox="13.5 12 28 21" fill="#000000" stroke="#000000" stroke-width="0.5">
-
-  <path
-    d="M15.5,24c-0.256,0-0.512-0.098-0.707-0.293c-0.391-0.391-0.391-1.023,0-1.414l6-6
-       c0.391-0.391,1.023-0.391,1.414,0s0.391,1.023,0,1.414l-6,6C16.012,23.902,15.756,24,15.5,24z"
-  >
-  </path>
-
-  <path
-    d="M21.5,30c-0.256,0-0.512-0.098-0.707-0.293l-6-6c-0.391-0.391-0.391-1.023,0-1.414
-       s1.023-0.391,1.414,0l6,6c0.391,0.391,0.391,1.023,0,1.414C22.012,29.902,21.756,30,21.5,30z"
-  >
-  </path>
-
-  <path
-    d="M33.5,30c-0.256,0-0.512-0.098-0.707-0.293c-0.391-0.391-0.391-1.023,0-1.414l6-6
-       c0.391-0.391,1.023-0.391,1.414,0s0.391,1.023,0,1.414l-6,6C34.012,29.902,33.756,30,33.5,30z"
-  >
-  </path>
-
-  <path
-    d="M39.5,24c-0.256,0-0.512-0.098-0.707-0.293l-6-6c-0.391-0.391-0.391-1.023,0-1.414
-       s1.023-0.391,1.414,0l6,6c0.391,0.391,0.391,1.023,0,1.414C40.012,23.902,39.756,24,39.5,24z"
-  >
-  </path>
-
-  <path
-    d="M24.5,32c-0.11,0-0.223-0.019-0.333-0.058c-0.521-0.184-0.794-0.755-0.61-1.276l6-17
-       c0.185-0.521,0.753-0.795,1.276-0.61c0.521,0.184,0.794,0.755,0.61,1.276l-6,17
-       C25.298,31.744,24.912,32,24.5,32z"
-  >
-  </path>
-
-</svg>
-
-# EOF: ./Resources/images/toolbar-icon.svg
-================================================================================
-
-
---------------------------------------------------------------------------------
 # Filename: "popup.html"
 # Relative to Input Dir: "Shared (Extension)/Resources/popup.html"
 # Absolute Path: "/Users/kadengruizenga/Development/Projects/PromptToXML/Shared (Extension)/Resources/popup.html"
 ********************************************************************************
 # Start of Content in "./Resources/popup.html":
+<!-- popup.html -->
 <!DOCTYPE html>
 <html>
 
 <head>
     <meta charset="UTF-8">
-    <title>Textarea Content Viewer</title>
+    <title>DOM Tree Inspector</title>
     <link rel="stylesheet" href="popup.css">
+    <!-- Include Smooth Scrollbar for momentum scrolling -->
+    <script src="https://cdn.jsdelivr.net/npm/smooth-scrollbar@8.7.4/dist/smooth-scrollbar.js"></script>
     <script type="module" src="popup.js"></script>
 </head>
 
 <body>
-    <h1>Textarea Content</h1>
-    <pre id="textareaContent">Loading...</pre>
+    <div class="header">
+        <h1>DOM Tree Inspector</h1>
+        <div class="controls">
+            <button id="refreshButton" title="Refresh">&#x21bb;</button>
+            <button id="collapseAll" title="Collapse All">Collapse All</button>
+            <button id="expandAll" title="Expand All">Expand All</button>
+        </div>
+    </div>
+    <div id="treeContainer">
+        <p class="loading">Loading DOM tree...</p>
+    </div>
+    <!-- Modal for double-click details -->
+    <div id="modalOverlay" class="modal-overlay">
+        <div id="modalContent" class="modal-content">
+            <button id="modalClose" class="modal-close">&times;</button>
+        </div>
+    </div>
 </body>
 
 </html>
 # EOF: ./Resources/popup.html
-================================================================================
-
-
---------------------------------------------------------------------------------
-# Filename: "manifest.json"
-# Relative to Input Dir: "Shared (Extension)/Resources/manifest.json"
-# Absolute Path: "/Users/kadengruizenga/Development/Projects/PromptToXML/Shared (Extension)/Resources/manifest.json"
-********************************************************************************
-# Start of Content in "./Resources/manifest.json":
-{
-    "manifest_version": 3,
-    "default_locale": "en",
-    "name": "__MSG_extension_name__",
-    "description": "__MSG_extension_description__",
-    "version": "0.1",
-    "icons": 
-    {
-        "48": "images/icon-48.png",
-        "96": "images/icon-96.png",
-        "128": "images/icon-128.png",
-        "256": "images/icon-256.png",
-        "512": "images/icon-512.png"
-    },
-    "background": 
-    {
-        "scripts": 
-        [
-            "background.js"
-        ],
-        "type": "module"
-    },
-    "content_scripts": 
-    [
-        {
-            "js": 
-            [
-                "content.js"
-            ],
-            "matches": 
-            [
-                "<all_urls>"
-            ]
-        }
-    ],
-    "action": 
-    {
-        "default_popup": "popup.html",
-        "default_icon": "images/toolbar-icon.svg"
-    },
-    "permissions": 
-    [
-        "activeTab"
-    ]
-}
-# EOF: ./Resources/manifest.json
 ================================================================================
 
 
@@ -267,35 +502,243 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 # Absolute Path: "/Users/kadengruizenga/Development/Projects/PromptToXML/Shared (Extension)/Resources/popup.css"
 ********************************************************************************
 # Start of Content in "./Resources/popup.css":
+/* popup.css */
+
 :root {
-    color-scheme: light dark;
+    --background-light: #f0f2f5;
+    --card-bg: #ffffff;
+    --card-border: #e0e0e0;
+    --primary-color: #6200ea;
+    --text-color: #333333;
+    --accent-color: #03dac6;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --error-color: #d32f2f;
+    --selected-bg: #e8f0fe;
+}
+
+html {
+    scroll-behavior: smooth;
 }
 
 body {
-    width: 300px;
-    padding: 10px;
-    font-family: system-ui;
-    text-align: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--background-light);
+    color: var(--text-color);
+    display: flex;
+    flex-direction: column;
+    height: 600px;
+    width: 800px;
+    margin: 0;
+    padding: 0;
 }
 
-pre {
+.header {
+    padding: 15px;
+    background: var(--card-bg);
+    box-shadow: 0 2px 4px var(--shadow-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: var(--primary-color);
+}
+
+.controls {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.controls button {
+    padding: 8px 12px;
+    border: none;
+    background: var(--primary-color);
+    color: #fff;
+    font-size: 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.controls button:hover {
+    background: var(--accent-color);
+}
+
+.controls button.rotating {
+    animation: rotate 0.5s linear;
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+#treeContainer {
+    flex: 1;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    padding: 15px;
+    background: var(--background-light);
+}
+
+.loading,
+.error {
+    text-align: center;
+    margin: 20px 0;
+    color: var(--text-color);
+}
+
+.tree-root,
+.tree-children {
+    list-style: none;
+    margin: 0;
+    padding-left: 20px;
+}
+
+.tree-node {
+    margin: 4px 0;
+    position: relative;
+}
+
+.node-header {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: background 0.2s ease, outline 0.2s ease;
+}
+
+.node-header:hover {
+    outline: 2px solid var(--accent-color);
+    background: var(--selected-bg);
+}
+
+.toggle-icon {
+    display: inline-block;
+    width: 20px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.node-label {
+    margin-left: 4px;
+}
+
+.node-details {
+    display: none;
+    margin: 4px 0 8px 24px;
+    padding: 4px 8px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 4px;
+}
+
+.node-details.expanded {
+    display: block;
+}
+
+.node-pre {
     white-space: pre-wrap;
     word-wrap: break-word;
     background: #f9f9f9;
     padding: 8px;
-    border: 1px solid #ccc;
-    margin-top: 10px;
+    border: 1px solid var(--card-border);
+    border-radius: 4px;
+    margin: 4px 0;
+}
+
+/* Vertical collapse line */
+.collapse-line {
+    position: absolute;
+    left: 10px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #aeaeae;
+    cursor: pointer;
+}
+
+.collapse-line:hover {
+
+    background: var(--accent-color);
+}
+
+/* Modal styling */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    scroll-behavior: smooth;
+}
+
+.modal-content {
+    background: var(--card-bg);
+    border-radius: 8px;
+    padding: 20px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    margin: 5% auto;
+    position: relative;
+}
+
+.modal-close {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--primary-color);
+}
+
+/* Modal tree styling */
+.parent-chain,
+.modal-tree-root,
+.modal-tree-children {
+    list-style: none;
+    margin: 0;
+    padding-left: 20px;
+}
+
+.parent-chain li,
+.modal-tree-node {
+    margin: 4px 0;
 }
 
 @media (prefers-color-scheme: dark) {
-    body {
-        background: #333;
-        color: #eee;
+    :root {
+        --background-light: #2e2e2e;
+        --card-bg: #3c3c3c;
+        --card-border: #555555;
+        --primary-color: #bb86fc;
+        --text-color: #e0e0e0;
+        --accent-color: #03dac6;
+        --shadow-color: rgba(0, 0, 0, 0.5);
+        --selected-bg: #505f9f;
     }
 
-    pre {
-        background: #444;
-        border-color: #666;
+    body {
+        background: var(--background-light);
     }
 }
 # EOF: ./Resources/popup.css
@@ -303,22 +746,38 @@ pre {
 
 
 --------------------------------------------------------------------------------
-# Filename: "messages.json"
-# Relative to Input Dir: "Shared (Extension)/Resources/_locales/en/messages.json"
-# Absolute Path: "/Users/kadengruizenga/Development/Projects/PromptToXML/Shared (Extension)/Resources/_locales/en/messages.json"
+# Filename: "content.js"
+# Relative to Input Dir: "Shared (Extension)/Resources/content.js"
+# Absolute Path: "/Users/kadengruizenga/Development/Projects/PromptToXML/Shared (Extension)/Resources/content.js"
 ********************************************************************************
-# Start of Content in "./Resources/_locales/en/messages.json":
-{
-    "extension_name": 
-    {
-        "message": "PromptToXML",
-        "description": "The display name for the extension."
-    },
-    "extension_description": 
-    {
-        "message": "This is PromptToXML. You should tell us what your extension does here.",
-        "description": "Description of what the extension does."
+# Start of Content in "./Resources/content.js":
+// content.js
+
+function traverse(element) {
+    let text = element.textContent ? element.textContent.trim() : '';
+    if (text.length > 50) {
+        text = text.substring(0, 50) + '...';
     }
+    const node = {
+        tag: element.tagName.toLowerCase(),
+        id: element.id || '',
+        classes: Array.from(element.classList),
+        textContent: text,
+        outerHTML: element.outerHTML,
+        children: []
+    };
+    Array.from(element.children).forEach((child) => {
+        node.children.push(traverse(child));
+    });
+    return node;
 }
-# EOF: ./Resources/_locales/en/messages.json
+
+browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.command === 'getDomTree') {
+        const tree = traverse(document.documentElement);
+        sendResponse({tree});
+    }
+});
+
+# EOF: ./Resources/content.js
 ================================================================================

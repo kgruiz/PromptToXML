@@ -14,16 +14,17 @@
         <h1>DOM Tree Inspector</h1>
         <div class="controls">
             <button id="refreshButton" title="Refresh">&#x21bb;</button>
+            <button id="collapseAll" title="Collapse All">Collapse All</button>
+            <button id="expandAll" title="Expand All">Expand All</button>
         </div>
     </div>
     <div id="treeContainer">
         <p class="loading">Loading DOM tree...</p>
     </div>
-    <!-- Modal for expanded node details -->
+    <!-- Modal for double-click details -->
     <div id="modalOverlay" class="modal-overlay">
-        <div class="modal-content">
-            <button id="closeModal" class="close-modal">&times;</button>
-            <div id="modalDetails"></div>
+        <div id="modalContent" class="modal-content">
+            <button id="modalClose" class="modal-close">&times;</button>
         </div>
     </div>
 </body>

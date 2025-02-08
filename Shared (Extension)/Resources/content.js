@@ -1,11 +1,5 @@
 // content.js
 
-/**
- * Recursively traverses the DOM to build a hierarchical representation.
- *
- * @param {Element} element - The current DOM element.
- * @returns {object} - The hierarchical representation of the element.
- */
 function traverse(element) {
     let text = element.textContent ? element.textContent.trim() : '';
     if (text.length > 50) {
@@ -19,7 +13,7 @@ function traverse(element) {
         outerHTML: element.outerHTML,
         children: []
     };
-    Array.from(element.children).forEach(child => {
+    Array.from(element.children).forEach((child) => {
         node.children.push(traverse(child));
     });
     return node;
