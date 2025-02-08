@@ -155,6 +155,16 @@ body {
     margin: 4px 0;
 }
 
+/* Style for JSON display */
+.json-display {
+    background: #f9f9f9;
+    padding: 8px;
+    border: 1px solid var(--card-border);
+    border-radius: 4px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
 /* Vertical collapse line */
 .collapse-line {
     position: absolute;

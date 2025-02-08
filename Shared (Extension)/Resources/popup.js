@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalOverlay = document.getElementById('modalOverlay');
     const modalContent = document.getElementById('modalContent');
     const modalClose = document.getElementById('modalClose');
+    const downloadButton = document.getElementById('downloadJson');
 
     let domTree = null;
 
@@ -222,7 +223,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 childContainer.style.display = 'none';
                 arrowIcon.textContent = '▶';
                 collapseLine.remove();
-                const headerDiv = li.querySelector('.node-header');
                 if (headerDiv) {
                     headerDiv.scrollIntoView({behavior: 'smooth', block: 'nearest'});
                 }
@@ -234,7 +234,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 childContainer.style.display === '') {
                 childContainer.style.display = 'block';
                 arrowIcon.textContent = '▼';
-                // If collapse line doesn't exist, create it.
                 if (!collapseLine) {
                     collapseLine = document.createElement('div');
                     collapseLine.className = 'collapse-line';
@@ -248,7 +247,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         childContainer.style.display = 'none';
                         arrowIcon.textContent = '▶';
                         collapseLine.remove();
-                        const headerDiv = li.querySelector('.node-header');
                         if (headerDiv) {
                             headerDiv.scrollIntoView(
                                 {behavior: 'smooth', block: 'nearest'});
@@ -359,7 +357,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     ul.style.display = 'none';
                     arrow.textContent = '▶';
                     collapseLine.remove();
-                    const headerDiv = parentLi.querySelector('.node-header');
                     if (headerDiv) {
                         headerDiv.scrollIntoView({behavior: 'smooth', block: 'nearest'});
                     }
@@ -379,6 +376,31 @@ document.addEventListener('DOMContentLoaded', () => {
                 refreshButton.classList.remove('rotating');
             }, 500);
         });
+    });
+
+    downloadButton.addEventListener('click', () => {
+        if (!domTree) {
+            alert('No hierarchy available to display.');
+            return;
+        }
+        // Open modal with JSON formatted hierarchy.
+        modalContent.innerHTML = '';
+        const closeButton = document.createElement('button');
+        closeButton.id = 'modalClose';
+        closeButton.className = 'modal-close';
+        closeButton.textContent = '×';
+        closeButton.addEventListener('click', () => {
+            modalOverlay.style.display = 'none';
+        });
+        modalContent.appendChild(closeButton);
+        const heading = document.createElement('h2');
+        heading.textContent = 'DOM Tree JSON';
+        modalContent.appendChild(heading);
+        const pre = document.createElement('pre');
+        pre.className = 'json-display';
+        pre.textContent = JSON.stringify(domTree, null, 2);
+        modalContent.appendChild(pre);
+        modalOverlay.style.display = 'block';
     });
 
     fetchDomTree();
